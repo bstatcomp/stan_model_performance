@@ -5,9 +5,11 @@ setwd("d:/work/stan_model_performance//Examples/linear_regression")
 source("../../R/performance.R")
 source("../../R/datagen/simple_linear/dg_simple_linear.R")
 
-models   <- list(m0 = create_model("./stan/lr_basic.stan",
+models   <- list(m1 = create_model("./stan/lr_loop.stan",
                                    cmdstan_dir = "d:/work/Stan/cmdstan-develop/"),
-                 m1 = create_model("./stan/lr_glm.stan", 
+                 m2 = create_model("./stan/lr_basic.stan",
+                                   cmdstan_dir = "d:/work/Stan/cmdstan-develop/"),
+                 m3 = create_model("./stan/lr_glm.stan", 
                                    cmdstan_dir = "d:/work/Stan/cmdstan-develop/"))
 
 datagens <- list(d0 = dg_simple_linear(variants = expand.grid(seed = 0, 
