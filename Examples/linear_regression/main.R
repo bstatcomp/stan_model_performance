@@ -1,7 +1,5 @@
 library(ggplot2)
 
-setwd("d:/work/stan_model_performance//Examples/linear_regression")
-
 source("../../R/performance.R")
 source("../../R/datagen/simple_linear/dg_simple_linear.R")
 
