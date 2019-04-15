@@ -1,2 +1,5 @@
 Examples/linear_regression/temp/
 Examples/wip_ignore/
+*.Rhistory
+*.rds
+Examples/glm_endtoend/temp/

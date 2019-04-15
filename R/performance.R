@@ -50,16 +50,21 @@ compile_and_sample <- function(stan_file,
   experiment_hash <- digest(list(model_code, cmdstan_dir, cmdstan_param_string))
   
   # Copy model code and compile model ------------------------------------------
+  start_time <- Sys.time()
   model_name <- paste0("model_", experiment_hash)
   model_file <- paste0(temp_dir, "/", model_name, ".stan")
   if (!file.exists(model_file)) writeLines(model_code, con = model_file)
   
   exe_file <- paste0(temp_dir, model_name, ".exe")
   if (get_os() != "windows")   exe_file <- paste0(temp_dir, model_name)
-  
-  if (!file.exists(exe_file)) system(paste0("make --directory=", cmdstan_dir, " ", exe_file))
+  make_call <- paste0("make --directory=", cmdstan_dir, " ", exe_file)
+  print(make_call)
+  if (!file.exists(exe_file)) system(make_call, intern = T)
+  end_time <- Sys.time()
+  print(end_time - start_time)
   
   # Dump dataset if needed -----------------------------------------------------
+  start_time <- Sys.time()
   data_file <- paste0(temp_dir, "/", digest(stan_data), "_data.R")
   
   if (!file.exists(data_file)) {
@@ -71,10 +76,14 @@ compile_and_sample <- function(stan_file,
     }
     rstan::stan_rdump(nms, file = data_file)
   }
+  if (!file.exists(exe_file)) system(make_call, intern = T)
+  end_time <- Sys.time()
+  print(end_time - start_time)
   
   # Sample from model ----------------------------------------------------------
+  start_time <- Sys.time()
   samples_file <- paste0(temp_dir, "/", experiment_hash, "_samples.csv")
-  
+
   x <- microbenchmark(
     system(paste0(
       exe_file,
@@ -85,7 +94,9 @@ compile_and_sample <- function(stan_file,
     )),
     times = 1
   )
-  
+  end_time <- Sys.time()
+  print(end_time - start_time)
+  print(x$time)
   return (list(samples = read.table(samples_file, sep = ",", h = T), 
                time_in_millis = x$time / 1000000))
 }
